@@ -113,3 +113,94 @@ async function filterPokemons(selectedURL) {
     return finalPokemonList;
 
 }
+
+/*
+    Loads pokemon by type and displays them.
+*/
+async function addListenerToTypeCards(pokemonType) {
+    document.querySelectorAll(".type-checkbox").forEach(input => {
+        input.addEventListener('click', async () => {
+            const selectedTypeList = getSelectedPokemonTypes();
+            const selectedURL = getURLOfTypes(selectedTypeList, pokemonType);
+            const filteredPokemonList = await filterPokemons(selectedURL);
+            // console.log(filteredPokemonList);
+            console.log(selectedTypeList);
+            console.log(selectedURL);
+
+            paginate(currentPage, DISPLAY_COUNT, filteredPokemonList);
+        });
+    });
+}
+
+async function fetchAndDisplayTypes() {
+    const pokemonType = await fetchType();
+    console.log(pokemonType);
+    displayTypes(pokemonType);
+    addListenerToTypeCards(pokemonType);
+}
+
+
+// ############################### DISPLAY POKEMON #############################
+
+/*
+    Loads 810 pokemons and stores it in the pokemons variable.
+*/
+async function fetchPokemons() {
+    // const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=810");
+    // const pokemons = await response.json();
+    const responsePokemon = await axios.get(POKEMON_URL_LIMITED);
+    const pokemons = responsePokemon.data.results;
+
+    return pokemons;
+;}
+
+function displayPokemons(pokemons) {
+    
+}
+
+function displayPokemonModal() {
+
+}
+
+async function fetchAndDisplayPokemons() {
+    const pokemons = await fetchPokemons();
+
+}
+
+
+// ############################### CONTROL ######################################
+
+
+async function init() {
+    await fetchAndDisplayTypes();
+    const pokemons = await fetchPokemons();
+    console.log((await axios.get("https://pokeapi.co/api/v2/type/1")).data.pokemon.length)
+    paginate(currentPage, DISPLAY_COUNT, pokemons);
+    const numPages = Math.ceil(pokemons.length / DISPLAY_COUNT)
+    updatePaginationDiv(currentPage, numPages)
+    // await fetchAndDisplayPokemons();
+}
+
+
+// Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code
+const paginate = function (currentPage, displayCount, pokemons) {
+    const selected_pokemons = pokemons.slice((currentPage - 1) * displayCount, currentPage * displayCount)
+
+    $('#pokeCards').empty()
+    selected_pokemons.forEach(async (pokemon) => {
+      const res = await axios.get(pokemon.url)
+      $('#pokeCards').append(`
+        <div class="pokeCard card" pokeName=${res.data.name}   >
+          <h3>${res.data.name.toUpperCase()}</h3> 
+          <img src="${res.data.sprites.front_default}" alt="${res.data.name}"/>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#pokeModal">
+            More
+          </button>
+          </div>  
+          `)
+    })
+
+    $().html() 
+}
+
+init();
