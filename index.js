@@ -2,7 +2,7 @@
 
 // A constant that represents the total number of pokemons
 // that should be displayed one each page.
-const DISPLAY_COUNT = 15;
+const DISPLAY_COUNT = 16;
 
 // A constant that represents total number of button to display
 const BUTTON_COUNT = 5;
@@ -206,9 +206,11 @@ async function init() {
 				return this.value;
 			})
 			.get();
-
+        console.log(`This is the selectedTypes:`, selectedTypes);
 		if (selectedTypes.length > 0) {
-			let filteredTypes = pokemons.filter((pokemon) => {
+            let filteredTypes = pokemons.filter((pokemon) => {
+                console.log(`This is the pokemon`, pokemon);
+                console.log(`This is the pokemon type`, pokemon.types);
 				const pokemonTypes = pokemon.types.map((type) => type.type.name);
 				return selectedTypes.every((type) => pokemonTypes.includes(type));
 			});
@@ -237,7 +239,7 @@ async function init() {
 	// await fetchAndDisplayPokemons();
 }
 
-const updatePaginationDiv = (currentPage, numPages) => {
+function updatePaginationDiv(currentPage, numPages) {
 	let html = "";
 
 	const startPage = Math.max(1, currentPage - Math.floor(BUTTON_COUNT / 2));
@@ -268,7 +270,7 @@ const updatePaginationDiv = (currentPage, numPages) => {
 };
 
 // Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code
-const paginate = function (currentPage, displayCount, pokemons) {
+function paginate(currentPage, displayCount, pokemons) {
 	const selected_pokemons = pokemons.slice(
 		(currentPage - 1) * displayCount,
 		currentPage * displayCount
@@ -289,7 +291,7 @@ const paginate = function (currentPage, displayCount, pokemons) {
 	});
 
 	$(".display-pokemon-count").html(
-		`<h2>${selected_pokemons.length} of ${pokemons.length} Pokemon </h2>`
+		`<h2>Showing ${selected_pokemons.length} of ${pokemons.length} Pokemon </h2>`
 	);
 };
 
