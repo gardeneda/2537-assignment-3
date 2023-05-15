@@ -9,6 +9,7 @@ const BUTTON_COUNT = 5;
 // The page that the user is on.
 let currentPage = 1;
 let numPages;
+let pokemons = [];
 
 const POKEMON_URL_LIMITED = "https://pokeapi.co/api/v2/pokemon?limit=810";
 
@@ -28,11 +29,9 @@ async function fetchType() {
     Display all of the pokemon types under the type container
 */
 function displayTypes(pokemonType) {
-    console.log(pokemonType);
-    pokemonType.forEach((type) => {
-        
+	pokemonType.forEach((type) => {
 		$(".type-card-container").append(
-            `<input 
+			`<input 
                 type="checkbox" id="${type.name}" 
                 class="typeCheckbox"
                 name="type"
@@ -114,7 +113,6 @@ async function addListenerToTypeCards(pokemonType) {
 
 async function fetchAndDisplayTypes() {
 	const pokemonType = await fetchType();
-	console.log(pokemonType);
 	displayTypes(pokemonType);
 	// addListenerToTypeCards(pokemonType);
 }
@@ -128,7 +126,14 @@ async function fetchPokemons() {
 	// const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=810");
 	// const pokemons = await response.json();
 	const responsePokemon = await axios.get(POKEMON_URL_LIMITED);
-	const pokemons = responsePokemon.data.results;
+	console.log(responsePokemon);
+
+	pokemons = await Promise.all(
+		responsePokemon.data.results.map(async (pokemon) => {
+			const res = await axios.get(pokemon.url);
+			return res.data;
+		})
+	);
 
 	return pokemons;
 }
@@ -142,60 +147,61 @@ async function fetchAndDisplayPokemons() {
 // ############################### CONTROL ######################################
 
 async function init() {
-	let pokemons = await fetchPokemons();
-
-	console.log(
-		(await axios.get("https://pokeapi.co/api/v2/type/1")).data.pokemon.length
-	);
-
+	await fetchPokemons();
 	await fetchAndDisplayTypes();
+
 	const numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
 	paginate(currentPage, DISPLAY_COUNT, pokemons);
 	updatePaginationDiv(currentPage, numPages);
 
 	// Code below referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code
-	$("body").on("click", ".pokeCard", function (e) {
+	// pop up modal when clicking on a pokemon card
+	// add event listener to each pokemon card
+	$("body").on("click", ".pokeCard", async function (e) {
 		const pokemonName = $(this).attr("pokeName");
-		const pokemon = pokemons.find((p) => p.name === pokemonName);
-		console.log(pokemon);
-		const types = pokemon.types.map((type) => type.type.name);
-
+		// console.log("pokemonName: ", pokemonName);
+		const res = await axios.get(
+			`https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+        );
+        console.log(res);
+		// console.log("res.data: ", res.data);
+		const types = res.data.types.map((type) => type.type.name);
+		// console.log("types: ", types);
 		$(".modal-body").html(`
-      <div id="pokeImage">
+        <div style="width:200px">
         <img src="${
-					pokemon.sprites.other["official-artwork"].front_default
-				}" alt="${pokemon.name}"/>
+					res.data.sprites.other["official-artwork"].front_default
+				}" alt="${res.data.name}"/>
         <div>
-          <h3>Abilities</h3>
-          <ul>
-            ${pokemon.abilities
-							.map((ability) => `<li>${ability.ability.name}</li>`)
-							.join("")}
-          </ul>
+        <h3>Abilities</h3>
+        <ul>
+        ${res.data.abilities
+					.map((ability) => `<li>${ability.ability.name}</li>`)
+					.join("")}
+        </ul>
         </div>
 
         <div>
-          <h3>Stats</h3>
-          <ul>
-            ${pokemon.stats
-							.map((stat) => `<li>${stat.stat.name}: ${stat.base_stat}</li>`)
-							.join("")}
-          </ul>
+        <h3>Stats</h3>
+        <ul>
+        ${res.data.stats
+					.map((stat) => `<li>${stat.stat.name}: ${stat.base_stat}</li>`)
+					.join("")}
+        </ul>
+
         </div>
 
-        <div>
+        </div>
           <h3>Types</h3>
           <ul>
-            ${types.map((type) => `<li>${type}</li>`).join("")}
+          ${types.map((type) => `<li>${type}</li>`).join("")}
           </ul>
-        </div>
-      `);
+      
+        `);
 		$(".modal-title").html(`
-      <h5>#${pokemon.id}</h5>
-      <h2>${
-				pokemon.name.charAt(0).toUpperCase() + pokemon.name.substring(1)
-			}</h2>
-    `);
+        <h2>${res.data.name.toUpperCase()}</h2>
+        <h5>${res.data.id}</h5>
+        `);
 	});
 
 	// event-listener to typecheckbox
@@ -206,11 +212,9 @@ async function init() {
 				return this.value;
 			})
 			.get();
-        console.log(`This is the selectedTypes:`, selectedTypes);
+		console.log(`This is the selectedTypes:`, selectedTypes);
 		if (selectedTypes.length > 0) {
-            let filteredTypes = pokemons.filter((pokemon) => {
-                console.log(`This is the pokemon`, pokemon);
-                console.log(`This is the pokemon type`, pokemon.types);
+			let filteredTypes = pokemons.filter((pokemon) => {
 				const pokemonTypes = pokemon.types.map((type) => type.type.name);
 				return selectedTypes.every((type) => pokemonTypes.includes(type));
 			});
@@ -225,7 +229,9 @@ async function init() {
 					return res.data;
 				})
 			);
-		}
+        }
+        paginate(currentPage, DISPLAY_COUNT, pokemons);
+        updatePaginationDiv(currentPage, numPages);
 	});
 
 	// add event listener to pagination buttons
@@ -267,22 +273,22 @@ function updatePaginationDiv(currentPage, numPages) {
 	}
 
 	$("#pagination").html(html);
-};
+}
 
 // Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code
 function paginate(currentPage, displayCount, pokemons) {
-	const selected_pokemons = pokemons.slice(
+	selected_pokemons = pokemons.slice(
 		(currentPage - 1) * displayCount,
 		currentPage * displayCount
 	);
 
+	console.log(`This is Selected:`, selected_pokemons);
 	$("#pokeCards").empty();
 	selected_pokemons.forEach(async (pokemon) => {
-		const res = await axios.get(pokemon.url);
 		$("#pokeCards").append(`
-        <div class="pokeCard card" pokeName=${res.data.name}   >
-          <h3>${res.data.name.toUpperCase()}</h3> 
-          <img src="${res.data.sprites.front_default}" alt="${res.data.name}"/>
+        <div class="pokeCard card" pokeName=${pokemon.name}   >
+          <h3>${pokemon.name.toUpperCase()}</h3> 
+          <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}"/>
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#pokeModal">
             More
           </button>
@@ -293,6 +299,6 @@ function paginate(currentPage, displayCount, pokemons) {
 	$(".display-pokemon-count").html(
 		`<h2>Showing ${selected_pokemons.length} of ${pokemons.length} Pokemon </h2>`
 	);
-};
+}
 
 init();
