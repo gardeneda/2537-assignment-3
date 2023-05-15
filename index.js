@@ -245,9 +245,11 @@ async function init() {
 	// await fetchAndDisplayPokemons();
 }
 
+// Reference: Asked permission and referenced code from Hiroshi Nakasone
 function updatePaginationDiv(currentPage, numPages) {
 	let html = "";
 
+    // Formula attained from ChatGPT
 	const startPage = Math.max(1, currentPage - Math.floor(BUTTON_COUNT / 2));
 	const endPage = Math.min(
 		numPages,
