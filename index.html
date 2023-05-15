@@ -12,15 +12,66 @@
 			crossorigin="anonymous"
 		/>
 
+        <!-- JQUERY  -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+
 		<!-- Axios JS -->
 		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-        <!-- Custom CSS  -->
-        <link rel="stylesheet" href="./index.css"/>
+		<!-- Custom CSS  -->
+		<link rel="stylesheet" href="./index.css" />
 	</head>
 	<body>
+		<div class="main-container">
+			<div class="type-checkbox-container">
+                <h4>Pokemon Type</h4>
+                <div class="type-card-container"></div>
+            </div>
+            <div class="display-pokemon-count"></div>
+			<div id="pokeCards"></div>
+            <div id="pagination"></div>
+            <div id="pokeModal" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Modal title</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Modal body text goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+		</div>
 
+		<template id="type-template">
+			<div class="type-checkbox-card">
+				<input
+                    class="type-checkbox"
+					id="pokemon-type"
+					name="pokemonType"
+					value="type"
+					type="checkbox"
+				/>
+				<label for="pokemon-type" id="type"> </label>
+			</div>
+		</template>
 
+        <template class="pokemon-cards">
+            <div>
+              <h3 id="pokemon-name"></h3>
+              <img id="pokemon-picture" alt="pokemon-picture"/>
+              <button class="more">More</button>
+            </div>
+        </template>
 
 		<!-- Bootstrap JS -->
 		<script
@@ -28,8 +79,7 @@
 			integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
 			crossorigin="anonymous"
 		></script>
-
-        <!-- Custom JS -->
-        <script src="./index.js"></script>
+		<!-- Custom JS -->
+		<script src="./index.js"></script>
 	</body>
 </html>
