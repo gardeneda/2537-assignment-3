@@ -119,7 +119,7 @@ async function filterPokemons(selectedURL) {
 */
 async function addListenerToTypeCards(pokemonType) {
     document.querySelectorAll(".type-checkbox").forEach(input => {
-        input.addEventListener('click', async () => {
+        input.addEventListener('change', async () => {
             const selectedTypeList = getSelectedPokemonTypes();
             const selectedURL = getURLOfTypes(selectedTypeList, pokemonType);
             const filteredPokemonList = await filterPokemons(selectedURL);
