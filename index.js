@@ -151,7 +151,7 @@ async function init() {
 	await fetchPokemons();
 	await fetchAndDisplayTypes();
 
-	const numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
+	let numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
 	paginate(currentPage, DISPLAY_COUNT, pokemons);
 	updatePaginationDiv(currentPage, numPages);
 
@@ -218,9 +218,11 @@ async function init() {
 				const pokemonTypes = pokemon.types.map((type) => type.type.name);
 				return selectedTypes.every((type) => pokemonTypes.includes(type));
 			});
-			pokemons = filteredTypes;
+            pokemons = filteredTypes;
+            numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
 		} else {
             pokemons = await fetchPokemons();
+            numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
         }
         paginate(currentPage, DISPLAY_COUNT, pokemons);
         updatePaginationDiv(currentPage, numPages);
@@ -243,10 +245,7 @@ function updatePaginationDiv(currentPage, numPages) {
 
     // Formula attained from ChatGPT
 	const startPage = Math.max(1, currentPage - Math.floor(BUTTON_COUNT / 2));
-	const endPage = Math.min(
-		numPages,
-		currentPage + Math.floor(BUTTON_COUNT / 2)
-	);
+	const endPage = Math.min(numPages, currentPage + Math.floor(BUTTON_COUNT / 2));
 
 	if (currentPage > 1) {
 		html += `<button class="btn btn-danger page ml-1 numberedButtons" value="${
