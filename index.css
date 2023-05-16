@@ -9,11 +9,15 @@ h4 {
     text-align: center;
 }
 
+label {
+    margin-left: 5px;
+    color: white;
+}
+
 .main-container {
 	display: flex;
 	flex-direction: column;
-	flex-wrap: nowrap;
-
+    flex-wrap: nowrap;
 	height: 100%;
 	width: 100%;
 }
@@ -27,28 +31,34 @@ h4 {
 	);
 }
 
+
 .type-card-container {
-	margin: 2%;
+	margin-left: 0.5%;
 	display: flex;
 	flex-direction: row;
-	align-items: flex-start;
+    flex-wrap: wrap;
+	align-items: center;
 }
 
 .type-checkbox-card {
+
 	color: white;
-	margin: 2.5%;
+	margin-left: 2.5%;
 }
 
 .pokemon-display-container {
 	width: 75%;
 }
 
+/* Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code */
 #pokeCards {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 }
 
+
+/* Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code */
 .pokeCard {
 	width: 200px;
 	height: 200px;
@@ -75,6 +85,7 @@ h4 {
     justify-content: center;
 }
 
+/* Referenced from github repo Nabil828/COMP2530-s23-A3-Sample-Code */
 .modal img {
     width: 100%;
     height: 100%;

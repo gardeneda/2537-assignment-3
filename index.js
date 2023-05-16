@@ -33,7 +33,7 @@ function displayTypes(pokemonType) {
 		$(".type-card-container").append(
 			`<input 
                 type="checkbox" id="${type.name}" 
-                class="typeCheckbox"
+                class="type-checkbox-card"
                 name="type"
                 value="${type.name}"/>  
             <label for="${type.name}">${type.name}</label>`
@@ -94,6 +94,7 @@ async function filterPokemons(selectedURL) {
 
 /*
     Loads pokemon by type and displays them.
+    Depecrated as its not the wanted behavior*****
 */
 async function addListenerToTypeCards(pokemonType) {
 	document.querySelectorAll(".type-checkbox").forEach((input) => {
@@ -207,12 +208,11 @@ async function init() {
 	// event-listener to typecheckbox
 	$("body").on("change", ".type-checkbox-container", async function (e) {
 		const $selectedTypes = $("input[name='type']:checked");
-		const selectedTypes = $selectedTypes
-			.map(function () {
+		const selectedTypes = $selectedTypes.map(function () {
 				return this.value;
 			})
-			.get();
-		console.log(`This is the selectedTypes:`, selectedTypes);
+            .get();
+        
 		if (selectedTypes.length > 0) {
 			let filteredTypes = pokemons.filter((pokemon) => {
 				const pokemonTypes = pokemon.types.map((type) => type.type.name);
@@ -220,15 +220,7 @@ async function init() {
 			});
 			pokemons = filteredTypes;
 		} else {
-			response = await axios.get(
-				"https://pokeapi.co/api/v2/pokemon?offset=0&limit=810"
-			);
-			pokemons = await Promise.all(
-				response.data.results.map(async (pokemon) => {
-					const res = await axios.get(pokemon.url);
-					return res.data;
-				})
-			);
+            pokemons = await fetchPokemons();
         }
         paginate(currentPage, DISPLAY_COUNT, pokemons);
         updatePaginationDiv(currentPage, numPages);
