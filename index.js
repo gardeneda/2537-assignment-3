@@ -127,7 +127,6 @@ async function fetchPokemons() {
 	// const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=810");
 	// const pokemons = await response.json();
 	const responsePokemon = await axios.get(POKEMON_URL_LIMITED);
-	console.log(responsePokemon);
 
 	pokemons = await Promise.all(
 		responsePokemon.data.results.map(async (pokemon) => {
@@ -205,23 +204,24 @@ async function init() {
         `);
 	});
 
-	// event-listener to typecheckbox
-	$("body").on("change", ".type-checkbox-container", async function (e) {
-		const $selectedTypes = $("input[name='type']:checked");
+    // Adds a listener to the type-checkbox-container
+    $("body").on("change", ".type-checkbox-container", async function (e) {
+        pokemons = await fetchPokemons();
+		$selectedTypes = $("input[name='type']:checked");
 		const selectedTypes = $selectedTypes.map(function () {
 				return this.value;
 			})
             .get();
         
-		if (selectedTypes.length > 0) {
+        if (selectedTypes.length > 0) {
+            console.log("The code ran");
 			let filteredTypes = pokemons.filter((pokemon) => {
 				const pokemonTypes = pokemon.types.map((type) => type.type.name);
 				return selectedTypes.every((type) => pokemonTypes.includes(type));
-			});
+            });
             pokemons = filteredTypes;
             numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
 		} else {
-            pokemons = await fetchPokemons();
             numPages = Math.ceil(pokemons.length / DISPLAY_COUNT);
         }
         paginate(currentPage, DISPLAY_COUNT, pokemons);
@@ -275,7 +275,6 @@ function paginate(currentPage, displayCount, pokemons) {
 		currentPage * displayCount
 	);
 
-	console.log(`This is Selected:`, selected_pokemons);
 	$("#pokeCards").empty();
 	selected_pokemons.forEach(async (pokemon) => {
 		$("#pokeCards").append(`
